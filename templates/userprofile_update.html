@@ -1,0 +1,38 @@
+{% extends 'index.html' %}
+{% block title %}
+User Profile Update
+{% endblock title %}
+{% block body %}
+
+<div class="container pt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6 mt-5">
+        <h2>Update Profile</h2>
+        <form method="post" action="{% url 'edit_profile_data' %}">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="phone" class="form-label">Phone Number</label>
+            <input required type="tel" class="form-control" id="phone" name="phone" maxlength="13" value="{{ user_profile.phone}}">
+          </div>
+          <div class="mb-3">
+            <label for="skill" class="form-label">Skill set</label>
+            <input required type="text" class="form-control" id="skill" name="skill" value="{{ user_profile.skill_set }}">
+          </div>
+          <div class="mb-3">
+            <label for="Learning_interests" class="form-label">Learning interests</label>
+            <input required type="text" class="form-control" id="Learning_interests" name="Learning_interests" value="{{ user_profile.learning_interests }}">
+          </div>
+          <div class="mb-3">
+            <label for="courses" class="form-label">Completed courses</label>
+            <input required type="text" class="form-control" id="courses" name="courses" value="{{ user_profile.completed_courses }}">
+          </div>
+          <div class="mb-3">
+            <label for="bio" class="form-label">Bio</label>
+            <textarea class="form-control" id="bio" name="bio" rows="3">{{ user_profile.bio }}</textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Update Profile</button>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock body %}

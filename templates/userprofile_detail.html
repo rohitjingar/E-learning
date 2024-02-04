@@ -1,0 +1,51 @@
+{% extends 'index.html' %}
+
+{% block title %}
+User Profile
+{% endblock title %}
+
+{% load static %}
+{% block body %}
+<div class="container pt-5">
+  <div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm">
+          <div class="card-body text-center">
+            {% if user_profile.picture %}
+              <img src="{{ user_profile.picture.url }}" alt="{{ user_profile.user }}" class="rounded-circle mb-3" style="width: 200px; height: 200px; object-fit: cover;">
+            {% else %}
+              <a class="nav-link"><i class="fas fa-user-circle fa-5x"></i></a>
+            {% endif %}
+            
+            <form action="{% url 'edit-profile' %}" method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+              {{ form.as_p }}
+              <div class="form-group mt-6">
+                <label for="id_picture">Profile Picture:</label>
+                <input type="file" name="picture" class="form-control-file ml-auto " id="id_picture">
+              </div>
+              <button  type="submit" class="btn btn-primary mt-2">Save</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    <div class="col-md-8 ">
+      <div class="card border border-dark mb-3">
+        <div class="card-header">
+          <h4 class="card-title">{{ user_profile.user }}</h4>
+        </div>
+        <div class="card-body">
+          <p class="card-text"><strong>Email:</strong> {{ user_profile.email }}</p>
+          <p class="card-text"><strong>Phone:</strong> {{ user_profile.phone }}</p>
+          <p class="card-text"><strong>Skill set:</strong> {{ user_profile.skill_set }}</p>
+          <p class="card-text"><strong>Learning interests:</strong> {{ user_profile.learning_interests }}</p>
+          <p class="card-text"><strong>Completed courses:</strong> {{ user_profile.completed_courses }}</p>
+          <p class="card-text"><strong>Bio:</strong> {{ user_profile.bio }}</p>
+        </div>
+      </div>
+      <a href="{% url 'edit_profile_data' %}" class="btn btn-primary mt-2 ">Edit Profile</a>
+    </div>
+
+  </div>
+</div>
+{% endblock body %}

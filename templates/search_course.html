@@ -1,0 +1,134 @@
+{% extends 'index.html' %} {% block title %} Search-Course {% endblock title %}
+{% block body %}
+
+<div class="container pt-5">
+    {% if messages %}
+      {% for message in messages %}
+     
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      
+      {% endfor %}
+      {% endif %}
+    <h1>Search Courses</h1>
+    <form method="GET">
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Search" aria-label="Search" aria-describedby="button-search" name="q" value="{{ request.GET.q }}">
+        <div class="input-group-append">
+          <button class="btn btn-primary" type="submit" id="button-search">Search</button>
+        </div>
+      </div>
+    </form>
+  
+    {% if courses %}
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+      {% for course in courses %}
+      <div class="col">
+        <div class="card h-100">
+          <img src="{{ course.course_image.url }}" class="card-img-top" alt="{{ course.name }}" style="object-fit: cover; height: 200px; width: 100%">
+          <div class="card-body">
+            <h5 class="card-title">{{ course.name }}</h5>
+            <p class="card-text">{{ course.description }}</p>
+            <p class="card-text">Instructor: {{ course.instructor }}</p>
+            {% if course.id in enrolled_courses %}
+           
+            <button class="btn btn-success" disabled>Enrolled</button>
+            
+            {% else %}
+            {% if course.enrollment_key %}
+            <button
+                   class="btn btn-primary stretched-link"
+                    type="button"
+                    data-bs-toggle="modal"
+                    data-bs-target="#enrollModal{{ course.pk }}"
+                  >
+                  Enroll Now
+                  </button>
+           
+            {% else %}
+            <form method="POST" action="{% url 'enroll_course' course.pk %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">Enroll Now</button>
+            </form>
+            {% endif %}
+            {% endif %}
+            
+          </div>
+        </div>
+      </div>
+       <!-- Enrollment Modal -->
+  <div class="modal fade" id="enrollModal{{ course.pk }}" tabindex="-1" role="dialog" aria-labelledby="enrollModalLabel{{ course.pk }}" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="enrollModalLabel{{ course.pk }}">Enroll in {{ course.name }}</h5>
+          <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+        </div>
+        <div class="modal-body">
+            
+          <form method="POST" action="{% url 'enroll_course' course.pk %}">
+            {% csrf_token %}
+        
+
+            <div class="form-group">
+              <label for="enrollment_key{{ course.pk }}">Enrollment Key:</label>
+              <input type="text" class="form-control" id="enrollment_key{{ course.pk }}" name="enrollment_key">
+              
+            </div>
+            <div class ="mt-2"> <button type="submit" class="btn btn-primary">Submit</button> </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p>No courses found.</p>
+    {% endif %}
+  
+    {% if is_paginated %}
+    <nav aria-label="Course Search Results" class="mt-4">
+      <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">&laquo; Previous</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+          <span class="page-link">&laquo; Previous</span>
+        </li>
+        {% endif %}
+        {% for num in page_obj.paginator.page_range %}
+        {% if page_obj.number == num %}
+        <li class="page-item active" aria-current="page">
+          <span class="page-link">{{ num }} <span class="sr-only">(current)</span></span>
+        </li>
+        {% else %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ num }}</a>
+        </li>
+        {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">Next &raquo;</a>
+        </li>
+        {% else %}
+        <li class="page-item disabled">
+          <span class="page-link">Next &raquo;</span>
+        </li>
+        {% endif %}
+      </ul>
+    </nav>
+    {% endif %}
+  </div>
+
+{% endblock body %}
